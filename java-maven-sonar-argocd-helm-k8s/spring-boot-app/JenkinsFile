@@ -15,7 +15,6 @@ stage('Install & Force JDK') {
       apt-get update
       apt-get install -y openjdk-17-jdk maven git
 
-      # FORCE JAVA HOME TO JDK
       export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
       export PATH=$JAVA_HOME/bin:$PATH
 
@@ -32,8 +31,7 @@ stage('Install & Force JDK') {
 
 stage('Checkout') {
   steps {
-    sh 'echo passed'
-    // git branch: 'main', url: 'https://github.com/Mohit7019/Jenkins-Zero-To-Hero.git'
+    git branch: 'main', url: 'https://github.com/Mohit7019/Jenkins-Zero-To-Hero.git'
   }
 }
 
@@ -43,7 +41,6 @@ stage('Build and Test') {
       export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
       export PATH=$JAVA_HOME/bin:$PATH
 
-      ls -ltr
       cd java-maven-sonar-argocd-helm-k8s/spring-boot-app
       mvn clean package
     '''
@@ -72,7 +69,6 @@ stage('Static Code Analysis') {
 stage('Build and Push Docker Image') {
   environment {
     DOCKER_IMAGE = "mohit/ultimate-cicd:${BUILD_NUMBER}"
-    REGISTRY_CREDENTIALS = credentials('docker')
   }
   steps {
     script {
@@ -107,7 +103,7 @@ stage('Update Deployment File') {
 
         git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
         git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-        git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+        git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
       '''
     }
   }
