@@ -8,11 +8,14 @@ pipeline {
 
   stages {
 
-    stage('Install Maven & Git') {
+    stage('Install JDK, Maven & Git') {
       steps {
         sh '''
           apt-get update
-          apt-get install -y maven git
+          apt-get install -y openjdk-17-jdk maven git
+
+          java -version
+          javac -version
           mvn -v
           git --version
         '''
@@ -29,7 +32,10 @@ pipeline {
     stage('Build and Test') {
       steps {
         sh 'ls -ltr'
-        sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
+        sh '''
+          cd java-maven-sonar-argocd-helm-k8s/spring-boot-app
+          mvn clean package
+        '''
       }
     }
 
